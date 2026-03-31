@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BRYNT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────
+       CONFIG RAPIDE — modifie ces 3 valeurs
+       ───────────────────────────────────── */
+    :root {
+      --bg:       #FAF8F4;
+      --ink:      #1C1917;
+      --accent:   #B5775A;
+      --accent2:  #8C5B42;
+      --muted:    #9B8E85;
+      --surface:  #F3EFE9;
+      --border:   rgba(181, 119, 90, 0.18);
+      --radius:   2px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { background: var(--bg); }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 56px 24px 80px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── En-tête ── */
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 58px;
+      letter-spacing: 0.22em;
+      color: var(--ink);
+      line-height: 1;
+      text-indent: 0.22em;
+      margin-bottom: 14px;
+    }
+
+    .rule {
+      width: 48px;
+      height: 0.5px;
+      background: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .tagline {
+      font-size: 12px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-align: center;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ── Cards ── */
+    .cards {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      width: 100%;
+      border: 0.5px solid var(--border);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.22s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1.5px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(181, 119, 90, 0.4);
+      background: #FDFAF7;
+      transform: translateY(-1px);
+    }
+
+    .card:hover::after { transform: scaleX(1); }
+
+    .card.highlight {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .card.highlight .card-title { color: #fff; }
+    .card.highlight .card-sub   { color: rgba(255,255,255,0.72); }
+    .card.highlight .arrow      { color: rgba(255,255,255,0.8); }
+
+    .card.highlight:hover {
+      background: var(--accent2);
+      border-color: var(--accent2);
+      transform: translateY(-1px);
+    }
+
+    .card.highlight::after { display: none; }
+
+    .card-left { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+
+    .card-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .card.highlight .card-eyebrow { color: rgba(255,255,255,0.6); }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 19px;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .card-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 300;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .arrow {
+      color: var(--accent);
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover .arrow { transform: translateX(3px); }
+
+    /* ── Formulaire ── */
+    .form-wrap {
+      width: 100%;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease, margin 0.4s ease;
+      opacity: 0;
+      margin-top: 0;
+    }
+
+    .form-wrap.open {
+      max-height: 700px;
+      opacity: 1;
+      margin-top: 12px;
+    }
+
+    .form-inner {
+      background: #fff;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px 24px;
+    }
+
+    .form-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 0.5px solid rgba(181,119,90,0.25);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.2s ease;
+      appearance: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    /* checkboxes */
+    .checks {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .check-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--ink);
+      font-weight: 300;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .check-label input[type="checkbox"] {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 0.5px solid rgba(181,119,90,0.4);
+      border-radius: 2px;
+      background: var(--bg);
+      flex-shrink: 0;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .check-label input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .check-label input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 4px;
+      width: 5px; height: 9px;
+      border: 1.5px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(42deg);
+    }
+
+    .btn-send {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: var(--ink);
+      color: #FAF8F4;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-send:hover { background: #2C2A27; }
+    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .form-msg {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 14px;
+      min-height: 18px;
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 52px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.45;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand      { animation: fadeUp 0.55s ease both 0.05s; }
+    .rule       { animation: fadeUp 0.55s ease both 0.12s; }
+    .tagline    { animation: fadeUp 0.55s ease both 0.18s; }
+    .cards      { animation: fadeUp 0.55s ease both 0.26s; }
+    .footer     { animation: fadeUp 0.55s ease both 0.36s; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <h1 class="brand">BRYNT</h1>
+  <div class="rule"></div>
+  <p class="tagline">Sourcing &amp; lancement de marque<br>depuis la Chine</p>
+
+  <div class="cards">
+
+    <!-- ── LIEN 1 : Liste fournisseurs ── -->
+    <a class="card"
+       href="REMPLACE_PAR_TON_LIEN_PAIEMENT"
+       target="_blank" rel="noopener">
+      <div class="card-left">
+        <span class="card-eyebrow">Accès immédiat</span>
+        <span class="card-title">La liste de fournisseurs<br>vérifiés en Chine</span>
+        <span class="card-sub">Contacts directs, vérifiés terrain · Shenzhen</span>
+      </div>
+      <svg class="arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+      </svg>
+    </a>
+
+    <!-- ── LIEN 2 : Formulaire projet ── -->
+    <div class="card highlight" onclick="toggleForm()">
+      <div class="card-left">
+        <span class="card-eyebrow">Accompagnement</span>
+        <span class="card-title">Lancer mon projet<br>de marque</span>
+        <span class="card-sub">Sourcing · Lancement · Présence terrain</span>
+      </div>
+      <svg class="arrow" id="arrow-form" width="18" height="18" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6"/>
+      </svg>
+    </div>
+
+    <!-- ── Formulaire inline ── -->
+    <div class="form-wrap" id="form-wrap">
+      <div class="form-inner">
+        <p class="form-title">Dis-moi tout sur ton projet</p>
+        <p class="form-hint">On te recontacte sous 48h pour un échange rapide.</p>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="f-prenom">Prénom</label>
+            <input type="text" id="f-prenom" placeholder="Sofia" required>
+          </div>
+          <div class="field">
+            <label for="f-nom">Nom</label>
+            <input type="text" id="f-nom" placeholder="Martin" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input type="email" id="f-email" placeholder="sofia@exemple.com" required>
+        </div>
+
+        <div class="field">
+          <label for="f-tel">Téléphone</label>
+          <input type="tel" id="f-tel" placeholder="+33 6 12 34 56 78">
+        </div>
+
+        <div class="field" style="margin-top:4px;">
+          <label style="margin-bottom:10px;">Ton projet</label>
+          <div class="checks">
+            <label class="check-label">
+              <input type="checkbox" id="c-sourcing" value="Sourcing">
+              Sourcing — trouver le bon fournisseur
+            </label>
+            <label class="check-label">
+              <input type="checkbox" id="c-marque" value="Lancer une marque">
+              Lancer une marque de A à Z
+            </label>
+          </div>
+        </div>
+
+        <button class="btn-send" onclick="sendForm()">Envoyer ma demande →</button>
+        <p class="form-msg" id="form-msg"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footer">BRYNT · Shenzhen, Chine</p>
+</div>
+
+<script>
+  /* ════════════════════════════════════════════
+     CONFIGURATION AIRTABLE
+     1. Va sur https://airtable.com/create/tokens
+     2. Crée un token avec scope data.records:write
+     3. Donne accès à ta base
+     ════════════════════════════════════════════ */
+  const AIRTABLE_TOKEN     = 'REMPLACE_PAR_TON_TOKEN_PAT';  // ex: patXXXXXXX
+  const AIRTABLE_BASE_ID   = 'REMPLACE_PAR_TON_BASE_ID';    // ex: appXXXXXXX
+  const AIRTABLE_TABLE     = 'Leads';                         // nom de ta table dans Airtable
+
+  /* ── toggle form ── */
+  function toggleForm() {
+    const wrap  = document.getElementById('form-wrap');
+    const arrow = document.getElementById('arrow-form');
+    const open  = wrap.classList.toggle('open');
+    arrow.style.transform = open ? 'rotate(90deg)' : '';
+    if (open) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ── envoi Airtable ── */
+  async function sendForm() {
+    const prenom  = document.getElementById('f-prenom').value.trim();
+    const nom     = document.getElementById('f-nom').value.trim();
+    const email   = document.getElementById('f-email').value.trim();
+    const tel     = document.getElementById('f-tel').value.trim();
+    const projets = [];
+    if (document.getElementById('c-sourcing').checked) projets.push('Sourcing');
+    if (document.getElementById('c-marque').checked)   projets.push('Lancer une marque');
+
+    const msg = document.getElementById('form-msg');
+
+    if (!prenom || !nom || !email) {
+      msg.style.color = '#C0392B';
+      msg.textContent = 'Merci de remplir prénom, nom et email.';
+      return;
+    }
+    if (projets.length === 0) {
+      msg.style.color = '#C0392B';
+      msg.textContent = 'Coche au moins un type de projet.';
+      return;
+    }
+
+    const btn = document.querySelector('.btn-send');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+    msg.textContent = '';
+
+    try {
+      const res = await fetch(
+        `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            fields: {
+              'Prénom':   prenom,
+              'Nom':      nom,
+              'Email':    email,
+              'Téléphone': tel,
+              'Projet':   projets.join(', ')
+            }
+          })
+        }
+      );
+
+      if (res.ok) {
+        msg.style.color = '#B5775A';
+        msg.textContent = 'Reçu ✓ On revient vers toi sous 48h.';
+        btn.textContent = 'Demande envoyée ✓';
+        ['f-prenom','f-nom','f-email','f-tel','c-sourcing','c-marque']
+          .forEach(id => {
+            const el = document.getElementById(id);
+            if (el.type === 'checkbox') el.checked = false;
+            else el.value = '';
+          });
+      } else {
+        const err = await res.json();
+        console.error(err);
+        msg.style.color = '#C0392B';
+        msg.textContent = 'Erreur. Vérifie ta config Airtable.';
+        btn.disabled = false;
+        btn.textContent = 'Envoyer ma demande →';
+      }
+    } catch(e) {
+      console.error(e);
+      msg.style.color = '#C0392B';
+      msg.textContent = 'Connexion impossible. Réessaie.';
+      btn.disabled = false;
+      btn.textContent = 'Envoyer ma demande →';
+    }
+  }
+</script>
+</body>
+</html>
